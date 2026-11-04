@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Accessibility Data | Critical Web Design</title>
+
+    <!-- 7.3 START
+    Title: Accessibility Data
+    Author(s): Owen Mundy, xtine burrough
+    Date: 2025
+    License: MIT
+    -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://criticalwebdesign.github.io/book/07-ethical-by-design/7-3/assets/css/styles.css">
+    <link rel="stylesheet" href="https://criticalwebdesign.github.io/book/07-ethical-by-design/7-3/assets/css/color.css">
+
+    <style>
+        /* Accessibility improvements */
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        header {
+            padding: 20px;
+        }
+
+        .option {
+            cursor: pointer;
+            outline-offset: 4px;
+            transition: opacity 0.2s ease, outline 0.2s ease;
+        }
+
+        .option:focus {
+            outline: 3px solid #000;
+            outline-offset: 5px;
+        }
+
+        .option.active {
+            outline: 3px solid #000;
+            outline-offset: 5px;
+            font-weight: bold;
+        }
+
+        .option:focus-visible {
+            outline: 3px solid #000;
+            outline-offset: 5px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .option {
+                transition: none;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Accessibility: header element -->
+    <header class="container-xl text-center">
+        <h1>Users Affected by Website Accessibility</h1>
+    </header>
+
+    <!-- Accessibility: navigation element -->
+    <nav class="container-xl text-center" aria-label="Select percentage of affected users">
+        <div class="row">
+            <div class="col-2">
+                <div class="option rose" data-percentage="15" tabindex="0" role="button" aria-pressed="false">15%</div>
+            </div>
+            <div class="col-2">
+                <div class="option green" data-percentage="23" tabindex="0" role="button" aria-pressed="false">23%</div>
+            </div>
+            <div class="col-2">
+                <div class="option cyan" data-percentage="26" tabindex="0" role="button" aria-pressed="false">26%</div>
+            </div>
+            <div class="col-2">
+                <div class="option blue" data-percentage="50.8" tabindex="0" role="button" aria-pressed="false">50.8%</div>
+            </div>
+            <div class="col-2">
+                <div class="option purple" data-percentage="74" tabindex="0" role="button" aria-pressed="false">74%</div>
+            </div>
+            <div class="col-2">
+                <div class="option magenta" data-percentage="96.8" tabindex="0" role="button" aria-pressed="false">96.8%</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Accessibility: section element -->
+    <section class="container-xl text-center" aria-live="polite">
+        <h2 class="blurb"></h2>
+        <div class="users grid-container container-xl"></div>
+    </section>
+
+    <!-- Accessibility: footer element -->
+    <footer class="container-xl text-center">
+        1. Geoff Cudd,
+        <a href="https://ddiy.co/web-accessibility-statistics/" target="_blank"
+            rel="noopener noreferrer" class="link-body-emphasis" title="Source">
+            Web Accessibility Statistics
+        </a> (2023);
+        2.
+        <a href="https://webaim.org/projects/million/#errors" target="_blank"
+            rel="noopener noreferrer" class="link-body-emphasis" title="Source">
+            The WebAIM Million
+        </a> (2023)
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+    <script src="https://criticalwebdesign.github.io/book/assets/js/functions.js"></script>
+    <script src="https://criticalwebdesign.github.io/book/07-ethical-by-design/7-3/assets/js/accessibility.js"></script>
+    <script src="https://criticalwebdesign.github.io/book/07-ethical-by-design/7-3/assets/js/main.js"></script>
+
+    <script>
+
+        // Get user portrait HTML string
+        function getUserPortraitString(currentUser, affectedUsers) {
+
+            let showAffectedClass = currentUser < affectedUsers ? "showAffected" : "";
+
+            let str = "";
+            str += `<span class="${showAffectedClass}">`;
+
+            // Add meaningful alt text to portrait images
+            str += `<img src="https://criticalwebdesign.github.io/book/07-ethical-by-design/7-3/assets/img/users/${userArr[currentUser]}.jpg"
+                class="portrait"
+                alt="Portrait representing user ${currentUser + 1} in the accessibility data visualization">`;
+
+            str += `</span>`;
+
+            return str;
+        }
+
+        // Add focus and keyboard interaction to each option
+        document.querySelectorAll(".option").forEach(option => {
+
+            // Mouse interaction
+            option.addEventListener("click", function () {
+                const percentage = Number(this.dataset.percentage);
+                const index = Array.from(document.querySelectorAll(".option")).indexOf(this);
+
+                setActive(index);
+                displayUsers(userCount, index);
+            });
+
+            // Keyboard interaction
+            option.addEventListener("keydown", function (event) {
+
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+
+                    const index = Array.from(document.querySelectorAll(".option")).indexOf(this);
+
+                    setActive(index);
+                    displayUsers(userCount, index);
+                }
+            });
+
+            // Focus interaction
+            option.addEventListener("focus", function () {
+
+                const index = Array.from(document.querySelectorAll(".option")).indexOf(this);
+
+                setActive(index);
+                displayUsers(userCount, index);
+            });
+
+        });
+
+        // Show selected in menu
+        setActive(0);
+
+        // Show users below menu
+        displayUsers(userCount, 0);
+
+    </script>
+
+</body>
+</html>
